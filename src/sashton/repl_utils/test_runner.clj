@@ -1,32 +1,52 @@
 (ns sashton.repl-utils.test-runner
-  (:require [kaocha.repl]))
+  (:require [kaocha.repl]
+            [clojure.java.io :as jio]
+            [clojure.edn :as edn]))
+
+(def filename ".sashton/repl-utils/test-runner.edn")
 
 (defonce focus-tests
   (atom []))
 
+(defn ^:private read-test-symbols
+  []
+  (try
+    (edn/read-string (slurp filename))
+    (catch Exception _
+      #{})))
+
+(defn ^:private write-test-symbols
+  [symbols]
+  (try
+    (jio/make-parents filename)
+    (spit filename (pr-str symbols))
+    (catch Exception _)))
+
 (defn add-focus-test
   [ns-or-symbol]
-  (swap! focus-tests conj ns-or-symbol))
+  (-> (read-test-symbols)
+      (conj ns-or-symbol)
+      (write-test-symbols)))
 
 (defn clear-focus-tests
   []
-  (reset! focus-tests []))
+  (write-test-symbols #{}))
 
 (defn print-focus-tests
   []
   (println "-----------------------------")
-  (println "FOCUS >>")
-  (doseq [test @focus-tests]
+  (println "Focus Tests")
+  (doseq [test (read-test-symbols)]
     (println "\t" test))
   (println "-----------------------------"))
 
 (defn run-focus-tests
   []
-  (doseq [test @focus-tests]
+  (doseq [test (read-test-symbols)]
     (kaocha.repl/run test)))
 
 (defn run-test
   [ns-or-symbol]
-  (reset! focus-tests [])
+  (clear-focus-tests)
   (add-focus-test ns-or-symbol)
   (run-focus-tests))

@@ -1,5 +1,6 @@
 (ns sashton.repl-utils.test-runner
-  (:require [kaocha.repl]))
+  (:require [kaocha.repl]
+            [clojure.test]))
 
 (defonce focus-tests
   (atom []))
@@ -23,7 +24,8 @@
 (defn run-focus-tests
   []
   (doseq [test @focus-tests]
-    (kaocha.repl/run test)))
+    ;; (kaocha.repl/run test)
+    (clojure.test/test-var (resolve test))))
 
 (defn run-test
   [ns-or-symbol]

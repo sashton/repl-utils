@@ -1,3 +1,4 @@
 {:paths ["src"]
  :deps {org.clojure/clojure {:mvn/version "1.10.3"}
+        com.amperity/ken {:mvn/version "1.2.0"}
         lambdaisland/kaocha {:mvn/version "1.60.945"}}}

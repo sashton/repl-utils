@@ -1,5 +1,6 @@
 (ns sashton.repl-utils.test-runner
   (:require [kaocha.repl]
+            [clojure.test]
             [clojure.java.io :as jio]
             [clojure.edn :as edn]))
 
@@ -42,8 +43,9 @@
 
 (defn run-focus-tests
   []
-  (doseq [test (read-test-symbols)]
-    (kaocha.repl/run test)))
+  (doseq [test @focus-tests]
+    ;; (kaocha.repl/run test)
+    (clojure.test/test-var (resolve test))))
 
 (defn run-test
   [ns-or-symbol]
